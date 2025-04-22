@@ -1,21 +1,17 @@
 @import "tailwindcss";
 
 @theme {
-    --font-display: "Satoshi", "sans-serif";
-    /*red*/
-    --color-red-45: #E50000;
+    /*accent*/
+    --color-accent: #E50000;
     /*black*/
     --color-black-06: #0F0F0F;
     --color-black-08: #141414;
     --color-black-10: #1A1A1A;
     --color-black-12: #1F1F1F;
     --color-black-15: #262626;
-}
-
-body {
-    background: var(--color-black-08);
-    color: white;
-    font-size: 18px;
+    --color-black-20: #333333;
+    /*grey*/
+    --color-grey-60: #999999;
 }
 
 .container {

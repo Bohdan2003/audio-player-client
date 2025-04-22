@@ -1,9 +1,13 @@
+import { AppRoutes } from './routes/AppRoutes.tsx';
+import { store } from './app/store';
+import { Provider } from 'react-redux';
+
 function App() {
   return (
-    <div>
-
-    </div>
-  )
+    <Provider store={store}>
+      <AppRoutes />
+    </Provider>
+  );
 }
 
-export default App
+export default App;
