@@ -1,22 +1,27 @@
 //hooks
 import { useState} from "react";
-import { useDeleteTrackMutation } from "../../../app/api.ts";
+import { useDeleteTrackMutation, useUnloadTrackMutation } from "../../../app/api.ts";
+import { useAppDispatch } from "../../../app/hooks.ts";
 //utils
 import { cn } from "../../../utils/cn.ts";
 import { DateFormatter } from "../../../utils/DateFormatter.ts";
 import { TTrack } from "../../../utils/types/track.ts";
 //components
-import { UploadTrackForm } from "./UploadTrackForm.tsx";
-import { EditTrackForm} from "./EditTrackForm.tsx";
+import { UploadForm } from "./UploadForm.tsx";
+import { EditForm} from "./EditForm.tsx";
 import { Button } from "@mui/material";
 import { DeleteIcon } from "../../../components/icons/DeleteIcon.tsx";
 import { EditIcon } from "../../../components/icons/EditIcon.tsx";
 import { PlayIcon } from "../../../components/icons/PlayIcon.tsx";
 //img
-import defaultImage from "../../../assets/defaultImage.avif"
+import defaultImage from "../../../assets/defaultImage.avif";
+//actions
+import { setAudioPlayerUrl } from "../../../slices/audioPlayerSlice.ts";
 
 export const ListItem: React.FC<TTrack> = (props) => {
-  const [ deleteTrack, { isLoading } ] = useDeleteTrackMutation();
+  const dispatch = useAppDispatch();
+  const [ deleteTrack, { isLoading: isDeleteLoading } ] = useDeleteTrackMutation();
+  const [ unloadTrack, { isLoading: isUnloadLoading, isError: isUnloadError } ] = useUnloadTrackMutation();
   const [ isEditModalOpen, setIsEditModalOpen] = useState<boolean>(false);
   const [ isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
 
@@ -35,6 +40,9 @@ export const ListItem: React.FC<TTrack> = (props) => {
         props?.audioFile &&
         <button
           className="absolute top-1/2 left-1/2 -translate-1/2"
+          onClick={() => {
+            dispatch(setAudioPlayerUrl(props.audioFile));
+          }}
         >
           <PlayIcon className="size-[40px]"/>
         </button>
@@ -51,14 +59,14 @@ export const ListItem: React.FC<TTrack> = (props) => {
         className="cursor-pointer"
         onClick={() => { setIsEditModalOpen(true); }}
       ><EditIcon/></button>
-      <EditTrackForm
+      <EditForm
         defaultValues={props}
         id={props.id}
         isModalOpen={isEditModalOpen}
         closeModal={() => { setIsEditModalOpen(false) }}
       />
       <button
-        disabled={isLoading}
+        disabled={isDeleteLoading}
         className="cursor-pointer"
         onClick={() => {
           deleteTrack(props.id);
@@ -66,12 +74,17 @@ export const ListItem: React.FC<TTrack> = (props) => {
       ><DeleteIcon/></button>
       {
         props?.audioFile
-          ? <Button>Unload</Button>
+          ? <Button
+              disabled={isUnloadError}
+              loading={isUnloadLoading}
+              onClick={() => { unloadTrack(props.id) }}
+            >Unload</Button>
           : <Button
-            onClick={() => { setIsUploadModalOpen(true); }}
-          >Upload</Button>
+              onClick={() => { setIsUploadModalOpen(true); }}
+            >Upload</Button>
       }
-      <UploadTrackForm
+      <UploadForm
+        id={props.id}
         isModalOpen={isUploadModalOpen}
         closeModal={() => { setIsUploadModalOpen(false) }}
       />

@@ -44,17 +44,20 @@ export const api = createApi({
       }),
       invalidatesTags: ['Tracks']
     }),
-    uploadTrack: builder.mutation<null, {id: string, file: File}>({
-      query: ({ id, file }) => {
-        const formData = new FormData();
-        formData.append('file', file);
-
-        return {
-          url: `tracks/${id}/upload`,
-          method: 'POST',
-          body: formData,
-        };
-      },
+    uploadTrack: builder.mutation<null, {id: string, file: FormData}>({
+      query: ({ id, file }) => ({
+        url: `tracks/${id}/upload`,
+        method: 'POST',
+        body: file,
+      }),
+      invalidatesTags: ['Tracks']
+    }),
+    unloadTrack: builder.mutation<null, string>({
+      query: (id) => ({
+        url: `tracks/${id}/file`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: ['Tracks']
     }),
   }),
 })
@@ -66,4 +69,5 @@ export const {
   useCreateTrackMutation,
   useEditTrackMutation,
   useUploadTrackMutation,
+  useUnloadTrackMutation,
 } = api

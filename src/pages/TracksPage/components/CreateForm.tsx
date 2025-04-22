@@ -1,22 +1,21 @@
 //hooks
 import { useEffect, useState } from 'react'
-import { useEditTrackMutation } from "../../../app/api.ts";
+import { useForm } from 'react-hook-form';
 //components
 import { GenreDropdown } from "./GenreDropdown.tsx";
 import { Modal, Button, Chip, Typography, Alert } from '@mui/material';
-import { useForm, FormProvider } from 'react-hook-form';
+import { FormProvider } from 'react-hook-form';
 import { FormTextField } from "../../../components/FormTextField.tsx";
 //utils
 import { yupResolver} from "@hookform/resolvers/yup";
 import * as yup from 'yup';
+import { useCreateTrackMutation } from "../../../app/api.ts";
 //types
-import { TTrackFormValues } from "../../../utils/types/track.ts";
+import { TTrackFormValues} from "../../../utils/types/track.ts";
 
 type TBaseModalFormProps = {
-  id: string;
   isModalOpen: boolean,
   closeModal: () => void,
-  defaultValues: TTrackFormValues
 }
 
 const schema = yup.object().shape({
@@ -31,13 +30,13 @@ const schema = yup.object().shape({
     .notRequired(),
 })
 
-export const EditTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, closeModal, id, defaultValues }) => {
-  const [ editTrack, { isLoading, error, isSuccess }] = useEditTrackMutation();
-  const [ showSuccess, setShowSuccess] = useState(false);
-  const [ showError, setShowError] = useState(false);
+export const CreateForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, closeModal }) => {
+  const [createTrack, { isLoading, error, isSuccess }] = useCreateTrackMutation();
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [showError, setShowError] = useState(false);
   const methods = useForm({
     resolver: yupResolver(schema),
-    defaultValues,
+    defaultValues: { title:'', artist: '', album:'', genres: [], coverImage:'' },
     reValidateMode: 'onBlur',
   });
   const { watch, setValue, reset } = methods;
@@ -46,7 +45,7 @@ export const EditTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, clos
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
     if (isSuccess) {
-      methods.reset();
+      reset();
       setShowSuccess(true);
       timeoutId = setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -59,10 +58,6 @@ export const EditTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, clos
       setTimeout(() => setShowError(false), 5000);
     }
   }, [error]);
-
-  useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
 
   const setNewGenre = (newGenre: string) => {
     if (newGenre && !genres.includes(newGenre)) {
@@ -78,16 +73,18 @@ export const EditTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, clos
     );
   };
 
+  const onSubmit = (data: TTrackFormValues) => {
+    createTrack(data);
+  };
+
   return (
     <Modal open={isModalOpen} onClose={() => closeModal()}>
       <FormProvider {...methods}>
         <form
           className="bg-black-15 absolute top-1/2 left-1/2 -translate-1/2 w-[760px] p-[20px] rounded-[8px] grid gap-[20px]"
-          onSubmit={methods.handleSubmit((track) => {
-            editTrack({id, track});
-          })}
+          onSubmit={methods.handleSubmit(onSubmit)}
         >
-          <h3>Edit track</h3>
+          <Typography variant="h6">Create track</Typography>
           <FormTextField
             fullWidth
             name="title"
@@ -130,22 +127,26 @@ export const EditTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, clos
             type="submit"
             loading={isLoading}
           >
-            Edit
+            Create
           </Button>
           <Button
             type="button"
             variant="outlined"
             onClick={() => reset()}
           >
-            Reset
+            Clear
           </Button>
-          {showSuccess && (
-            <Alert severity="success">Track edited successfully!</Alert>
-          )}
-          {showError && (
+          {
+            showSuccess &&
+            <Alert severity="success">Track successfully created!</Alert>
+          }
+          {
+            showError &&
+            // showError in 'data' &&
+            // error.data in 'error' &&
             // @ts-ignore
             <Alert severity="error">{error.data.error}</Alert>
-          )}
+          }
         </form>
       </FormProvider>
     </Modal>

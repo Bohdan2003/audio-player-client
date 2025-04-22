@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
+import { Typography } from "@mui/material";
 
 export const MainPage: React.FC = () => {
   return (<section>
     <div className="container">
-      <p className="py-[20px] text-[24px]">Main Page</p>
+      <Typography className="py-[20px]" variant="h4">Main Page</Typography>
       <Link className="text-accent" to="/tracks/1">Tracks</Link>
     </div>
   </section>);

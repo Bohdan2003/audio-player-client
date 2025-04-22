@@ -1,5 +1,6 @@
 //hooks
 import { useEffect, useState } from 'react'
+import { useEditTrackMutation } from "../../../app/api.ts";
 //components
 import { GenreDropdown } from "./GenreDropdown.tsx";
 import { Modal, Button, Chip, Typography, Alert } from '@mui/material';
@@ -8,11 +9,14 @@ import { FormTextField } from "../../../components/FormTextField.tsx";
 //utils
 import { yupResolver} from "@hookform/resolvers/yup";
 import * as yup from 'yup';
-import { useCreateTrackMutation } from "../../../app/api.ts";
+//types
+import { TTrackFormValues } from "../../../utils/types/track.ts";
 
 type TBaseModalFormProps = {
+  id: string;
   isModalOpen: boolean,
   closeModal: () => void,
+  defaultValues: TTrackFormValues
 }
 
 const schema = yup.object().shape({
@@ -27,13 +31,13 @@ const schema = yup.object().shape({
     .notRequired(),
 })
 
-export const CreateTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, closeModal }) => {
-  const [createTrack, { isLoading, error, isSuccess }] = useCreateTrackMutation();
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [showError, setShowError] = useState(false);
+export const EditForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, closeModal, id, defaultValues }) => {
+  const [ editTrack, { isLoading, error, isSuccess }] = useEditTrackMutation();
+  const [ showSuccess, setShowSuccess] = useState(false);
+  const [ showError, setShowError] = useState(false);
   const methods = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { title:'', artist: '', album:'', genres: [], coverImage:'' },
+    defaultValues,
     reValidateMode: 'onBlur',
   });
   const { watch, setValue, reset } = methods;
@@ -42,7 +46,7 @@ export const CreateTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, cl
   useEffect(() => {
     let timeoutId: ReturnType<typeof setTimeout>;
     if (isSuccess) {
-      reset();
+      methods.reset();
       setShowSuccess(true);
       timeoutId = setTimeout(() => setShowSuccess(false), 3000);
     }
@@ -55,6 +59,10 @@ export const CreateTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, cl
       setTimeout(() => setShowError(false), 5000);
     }
   }, [error]);
+
+  useEffect(() => {
+    reset(defaultValues);
+  }, [defaultValues, reset]);
 
   const setNewGenre = (newGenre: string) => {
     if (newGenre && !genres.includes(newGenre)) {
@@ -75,9 +83,11 @@ export const CreateTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, cl
       <FormProvider {...methods}>
         <form
           className="bg-black-15 absolute top-1/2 left-1/2 -translate-1/2 w-[760px] p-[20px] rounded-[8px] grid gap-[20px]"
-          onSubmit={methods.handleSubmit(createTrack)}
+          onSubmit={methods.handleSubmit((track) => {
+            editTrack({id, track});
+          })}
         >
-          <h3>Create track</h3>
+          <Typography variant="h6">Edit track</Typography>
           <FormTextField
             fullWidth
             name="title"
@@ -120,17 +130,17 @@ export const CreateTrackForm: React.FC<TBaseModalFormProps> = ({ isModalOpen, cl
             type="submit"
             loading={isLoading}
           >
-            Create
+            Edit
           </Button>
           <Button
             type="button"
             variant="outlined"
             onClick={() => reset()}
           >
-            Clear
+            Reset
           </Button>
           {showSuccess && (
-            <Alert severity="success">Track successfully created!</Alert>
+            <Alert severity="success">Track edited successfully!</Alert>
           )}
           {showError && (
             // @ts-ignore
