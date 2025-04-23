@@ -22,7 +22,7 @@ type TUploadTrackFormProps = {
   onClose: () => void;
 };
 
-const FILE_SIZE_LIMIT = 10 * 1024 * 1024; // 10MB
+const FILE_SIZE_LIMIT = 15 * 1024 * 1024; // 15MB
 const SUPPORTED_FORMATS = ['audio/mpeg', 'audio/wav'];
 
 const schema = yup.object().shape({

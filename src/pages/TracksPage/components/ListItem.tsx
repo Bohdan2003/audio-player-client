@@ -9,7 +9,7 @@ import { TTrack } from "../../../utils/types/track.ts";
 //components
 import { UploadMediaModal } from "./UploadMediaModal.tsx";
 import { EditTrackModal} from "./TrackModals/EditTrackModal.tsx";
-import { Button } from "@mui/material";
+import {Alert, Button} from "@mui/material";
 import { DeleteIcon } from "../../../components/icons/DeleteIcon.tsx";
 import { EditIcon } from "../../../components/icons/EditIcon.tsx";
 import { PlayIcon } from "../../../components/icons/PlayIcon.tsx";
@@ -19,6 +19,7 @@ import defaultImage from "../../../assets/defaultImage.avif";
 import { setAudioPlayerUrl } from "../../../slices/audioPlayerSlice.ts";
 
 type TListItemProps = {track: TTrack}
+const imgCls = 'size-[200px] lg:size-[100px] object-cover';
 
 export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
   const dispatch = useAppDispatch();
@@ -28,14 +29,14 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
   const [ isUploadModalOpen, setIsUploadModalOpen] = useState<boolean>(false);
 
   return (<li
-    className="bg-black-10 border-[1px] border-black-20 px-[24px] py-[14px] rounded-[4px] flex items-center gap-[20px]"
+    className="bg-black-10 border-[1px] border-black-20 px-[24px] py-[14px] rounded-[4px] flex flex-col lg:flex-row items-center gap-[20px]"
   >
     <div className="relative">
       <div className={cn(track?.audioFile && 'opacity-70')}>
         {
           track.coverImage
-            ? <img className="size-[100px] object-cover" src={track.coverImage} alt={track.title}/>
-            : <img className="size-[100px] object-cover" src={defaultImage} alt={track.title}/>
+            ? <img className={imgCls} src={track.coverImage} alt={track.title}/>
+            : <img className={imgCls} src={defaultImage} alt={track.title}/>
         }
       </div>
       {
@@ -56,40 +57,47 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
     </div>
     <p className="flex-1">{DateFormatter.getReadableDate(track.createdAt)}</p>
     <p className="flex-1">{track.genres.toString().replace(/,/g, ', ')}</p>
-    <div className="flex gap-[12px] justify-end">
-      <button
-        className="cursor-pointer"
-        onClick={() => { setIsEditModalOpen(true); }}
-      ><EditIcon/></button>
-      <EditTrackModal
-        defaultValues={track}
-        id={track.id}
-        isModalOpen={isEditModalOpen}
-        onClose={() => { setIsEditModalOpen(false) }}
-      />
-      <button
-        disabled={isDeleteLoading}
-        className="cursor-pointer"
-        onClick={() => {
-          deleteTrack(track.id);
-        }}
-      ><DeleteIcon/></button>
+    <div className="flex-1">
+      <div className="flex gap-[12px] justify-end">
+        <button
+          className="cursor-pointer"
+          onClick={() => { setIsEditModalOpen(true); }}
+        ><EditIcon/></button>
+        <EditTrackModal
+          defaultValues={track}
+          id={track.id}
+          isModalOpen={isEditModalOpen}
+          onClose={() => { setIsEditModalOpen(false) }}
+        />
+        <button
+          disabled={isDeleteLoading}
+          className="cursor-pointer"
+          onClick={() => {
+            deleteTrack(track.id);
+          }}
+        ><DeleteIcon/></button>
+        {
+          track?.audioFile
+            ? <Button
+                disabled={isUnloadError}
+                loading={isUnloadLoading}
+                onClick={() => { unloadTrack(track.id) }}
+              >Unload</Button>
+            : <Button
+                onClick={() => { setIsUploadModalOpen(true); }}
+              >Upload</Button>
+        }
+        <UploadMediaModal
+          id={track.id}
+          isModalOpen={isUploadModalOpen}
+          onClose={() => { setIsUploadModalOpen(false) }}
+        />
+      </div>
       {
-        track?.audioFile
-          ? <Button
-              disabled={isUnloadError}
-              loading={isUnloadLoading}
-              onClick={() => { unloadTrack(track.id) }}
-            >Unload</Button>
-          : <Button
-              onClick={() => { setIsUploadModalOpen(true); }}
-            >Upload</Button>
+        isUnloadError &&
+        //@ts-ignore
+        <Alert severity="error">Unload failed</Alert>
       }
-      <UploadMediaModal
-        id={track.id}
-        isModalOpen={isUploadModalOpen}
-        onClose={() => { setIsUploadModalOpen(false) }}
-      />
     </div>
   </li>)
 });

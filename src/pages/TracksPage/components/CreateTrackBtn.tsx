@@ -6,7 +6,10 @@ export const CreateTrackBtn: React.FC = () => {
   const [ isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   return (<div className="container mt-[20px]">
-    <Button onClick={() => { setIsModalOpen(true) }} >Create track</Button>
+    <Button
+      data-testid="create-track-button"
+      onClick={() => { setIsModalOpen(true) }}
+    >Create track</Button>
 
     <CreateTrackModal
       isModalOpen={isModalOpen}

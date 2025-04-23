@@ -57,7 +57,32 @@ export const api = createApi({
         method: "PUT",
         body: track,
       }),
-      invalidatesTags: ["Tracks"],
+      async onQueryStarted({ id, track }, { dispatch, queryFulfilled, getState }) {
+        const state = getState();
+        const patchResults = [];
+        const allTracksQueries = api.util.selectInvalidatedBy(state, [{ type: "Tracks" }]);
+
+        for (const key in allTracksQueries) {
+          const args = allTracksQueries[key].originalArgs;
+
+          const patchResult = dispatch(
+            api.util.updateQueryData("getTracks", args, (draft) => {
+              const index = draft.data.findIndex((t) => t.id === id);
+              if (index !== -1) {
+                Object.assign(draft.data[index], track);
+              }
+            })
+          );
+
+          patchResults.push(patchResult);
+        }
+
+        try {
+          await queryFulfilled
+        } catch {
+          patchResults.forEach(p => p.undo());
+        }
+      },
     }),
     uploadTrack: builder.mutation<null, { id: string; file: FormData }>({
       query: ({ id, file }) => ({

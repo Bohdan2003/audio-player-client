@@ -60,9 +60,10 @@ export const Filters: React.FC = () => {
 
   return (
     <div className="py-[20px] mt-[40px]">
-      <div className="container flex gap-[40px] justify-between">
-        <div className="flex gap-[20px]">
+      <div className="container flex flex-col lg:flex-row gap-[40px] justify-between">
+        <div className="flex gap-[20px] flex-wrap">
           <BaseTextField
+            data-testid="search-input"
             className="w-[280px]"
             value={searchValue}
             label="Search"

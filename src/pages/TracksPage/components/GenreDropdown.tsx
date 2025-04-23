@@ -23,12 +23,19 @@ export const GenreDropdown: React.FC<TGenreDropdownProps> = ({ setGenre }) => {
       }}>
         +
       </Button>
-      <Menu anchorEl={anchorEl} open={open} onClose={() => {setAnchorEl(null);}}>
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={() => {setAnchorEl(null);}}
+      >
         {genres.map((genre) => (
-          <MenuItem key={genre} onClick={() => {
-            setGenre(genre);
-            setAnchorEl(null);
-          }}>
+          <MenuItem
+            key={genre}
+            onClick={() => {
+              setGenre(genre);
+              setAnchorEl(null);
+            }}
+          >
             {genre}
           </MenuItem>
         ))}

@@ -4,7 +4,7 @@ import { CreateTrackBtn } from "./components/CreateTrackBtn.tsx";
 import { AudioPlayer } from "./components/AudioPlayer.tsx";
 
 export const TracksPage: React.FC = () => {
-  return (<div className="mb-20">
+  return (<div className="mb-[150px]">
     <CreateTrackBtn/>
     <Filters/>
     <List/>

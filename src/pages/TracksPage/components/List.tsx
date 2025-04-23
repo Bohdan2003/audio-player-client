@@ -27,6 +27,7 @@ export const List: React.FC = () => {
         <div className="grid place-items-center">
           <Pagination
             className="mt-[40px]"
+            page={+page}
             count={data.meta.totalPages}
             onChange={(_, page) => {
               navigate(`/tracks/${page}`);
