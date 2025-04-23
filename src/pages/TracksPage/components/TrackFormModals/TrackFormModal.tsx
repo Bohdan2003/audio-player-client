@@ -1,65 +1,96 @@
-//hooks
-import { useEffect } from 'react'
-import { useTrackForm } from './useTrackForm.ts';
-import { useEditTrackMutation } from "../../../../app/api.ts";
-//components
-import { GenreDropdown } from "../GenreDropdown.tsx";
+import { useEffect } from "react";
+import { FormProvider, useForm } from 'react-hook-form';
+import { yupResolver} from "@hookform/resolvers/yup";
+import * as yup from 'yup';
 import {
+  Alert,
   Button,
   Chip,
-  Typography,
-  Alert,
+  Dialog,
   DialogContent,
   DialogTitle,
-  Dialog,
-} from '@mui/material';
-import { FormProvider } from 'react-hook-form';
+  Typography
+} from "@mui/material";
 import { FormTextField } from "../../../../components/FormTextField.tsx";
+import { GenreDropdown } from "../GenreDropdown.tsx";
 //types
-import { TTrackFields } from '../../../../utils/types/track.ts';
+import { TTrackFields } from "../../../../utils/types/track.ts";
 
-type TBaseModalFormProps = {
-  id: string;
+const schema = yup.object().shape({
+  title: yup.string().required('Track title is required'),
+  artist: yup.string().required('Artist name is required'),
+  album: yup.string(),
+  genres: yup.array().of(yup.string().required()),
+  coverImage: yup.string().url('Must be a valid URL'),
+});
+
+type TTrackFormProps = {
   isModalOpen: boolean,
   onClose: () => void,
-  defaultValues: TTrackFields
+  isLoading: boolean,
+  error: any,
+  isError: boolean,
+  isSuccess: boolean,
+  resetMutation: () => void,
+  onSubmit: (data: TTrackFields) => void,
+  title: string,
+  defaultValues?: TTrackFields
 }
 
-export const EditTrackModal: React.FC<TBaseModalFormProps> = ({ isModalOpen, onClose, id, defaultValues }) => {
-  const [ editTrack, {
-    isLoading,
-    isError,
-    error,
-    isSuccess,
-    reset: resetMutation
-  }] = useEditTrackMutation();
-  const { methods, genres, setNewGenre, handleRemoveGenre, reset } = useTrackForm();
+export const TrackFormModal: React.FC<TTrackFormProps> = ({
+  isModalOpen,
+  onClose,
+  isLoading,
+  error,
+  isError,
+  isSuccess,
+  resetMutation,
+  onSubmit,
+  title,
+  defaultValues,
+}) => {
+  const methods = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { title:'', artist: '', album:'', genres: [], coverImage:'' },
+    reValidateMode: 'onBlur',
+  });
+  const { watch, setValue, reset } = methods;
+  const genres = watch("genres") || [];
 
   useEffect(() => {
-    reset(defaultValues);
+    if(defaultValues) reset(defaultValues);
   }, [defaultValues, reset]);
+
+  const setNewGenre = (newGenre: string) => {
+    if (newGenre && !genres.includes(newGenre)) {
+      setValue('genres', [...genres, newGenre]);
+    }
+  };
+
+  const handleRemoveGenre = (genreToRemove?: string) => {
+    setValue(
+      'genres',
+      genres.filter((genre) => genre !== genreToRemove)
+    );
+  };
 
   return (
     <Dialog
-      open={isModalOpen}
-      onClose={() => {
-        onClose();
-        resetMutation();
-      }}
+      open={isModalOpen} onClose={() => {
+      onClose();
+      resetMutation();
+    }}
       maxWidth='md'
       fullWidth
     >
-      <DialogTitle> Edit track </DialogTitle>
+      <DialogTitle> { title } </DialogTitle>
 
       <DialogContent>
         <FormProvider {...methods}>
           <form
             className="grid gap-[20px] py-2"
-            onSubmit={methods.handleSubmit((track) => {
-              editTrack({id, track});
-            })}
+            onSubmit={methods.handleSubmit(onSubmit)}
           >
-            <Typography variant="h6">Edit track</Typography>
             <FormTextField
               fullWidth
               name="title"
@@ -75,7 +106,7 @@ export const EditTrackModal: React.FC<TBaseModalFormProps> = ({ isModalOpen, onC
               name="album"
               label="Album name"
             />
-  
+
             {/* Genre input */}
             <div>
               <Typography variant="subtitle1">Genres</Typography>
@@ -90,7 +121,7 @@ export const EditTrackModal: React.FC<TBaseModalFormProps> = ({ isModalOpen, onC
               </div>
               <GenreDropdown setGenre={setNewGenre}/>
             </div>
-  
+
             <FormTextField
               fullWidth
               name="coverImage"
@@ -102,18 +133,18 @@ export const EditTrackModal: React.FC<TBaseModalFormProps> = ({ isModalOpen, onC
               type="submit"
               loading={isLoading}
             >
-              Edit
+              Send
             </Button>
             <Button
               type="button"
               variant="outlined"
               onClick={() => reset()}
             >
-              Reset
+              Clear
             </Button>
             {
               isSuccess &&
-              <Alert severity="success">Track successfully edited!</Alert>
+              <Alert severity="success">Success</Alert>
             }
             {
               isError &&
@@ -125,4 +156,4 @@ export const EditTrackModal: React.FC<TBaseModalFormProps> = ({ isModalOpen, onC
       </DialogContent>
     </Dialog>
   );
-};
+}

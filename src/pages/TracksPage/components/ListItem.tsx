@@ -8,7 +8,7 @@ import { DateFormatter } from "../../../utils/DateFormatter.ts";
 import { TTrack } from "../../../utils/types/track.ts";
 //components
 import { UploadMediaModal } from "./UploadMediaModal.tsx";
-import { EditTrackModal} from "./TrackModals/EditTrackModal.tsx";
+import { EditTrackModal} from "./TrackFormModals/EditTrackModal.tsx";
 import {Alert, Button} from "@mui/material";
 import { DeleteIcon } from "../../../components/icons/DeleteIcon.tsx";
 import { EditIcon } from "../../../components/icons/EditIcon.tsx";

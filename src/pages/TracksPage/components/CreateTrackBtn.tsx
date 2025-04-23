@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreateTrackModal } from "./TrackModals/CreateTrackModal.tsx";
+import { CreateTrackModal } from "./TrackFormModals/CreateTrackModal.tsx";
 import { Button } from "@mui/material";
 
 export const CreateTrackBtn: React.FC = () => {
