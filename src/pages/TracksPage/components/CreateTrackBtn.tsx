@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CreateForm } from "./CreateForm.tsx";
+import { CreateTrackModal } from "./TrackModals/CreateTrackModal.tsx";
 import { Button } from "@mui/material";
 
 export const CreateTrackBtn: React.FC = () => {
@@ -8,9 +8,9 @@ export const CreateTrackBtn: React.FC = () => {
   return (<div className="container mt-[20px]">
     <Button onClick={() => { setIsModalOpen(true) }} >Create track</Button>
 
-    <CreateForm
+    <CreateTrackModal
       isModalOpen={isModalOpen}
-      closeModal={() => { setIsModalOpen(false) }}
+      onClose={() => { setIsModalOpen(false) }}
     />
   </div>);
 }

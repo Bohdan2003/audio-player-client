@@ -15,8 +15,12 @@ import {
 } from "../../../slices/filterSlice.ts";
 //utils
 import { debounce } from "../../../utils/debounce.ts";
+//types
+import { TTrack } from "../../../utils/types/track.ts";
 
-const sortOptions = [
+type TOption = { label: string, value: keyof TTrack }
+
+const sortOptions: TOption[] = [
   { label: 'Title', value: 'title' },
   { label: 'Artist', value: 'artist' },
   { label: 'Album', value: 'album' },

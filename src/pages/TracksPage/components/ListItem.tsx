@@ -1,5 +1,5 @@
 //hooks
-import { useState} from "react";
+import { useState, memo } from "react";
 import { useDeleteTrackMutation, useUnloadTrackMutation } from "../../../app/api.ts";
 import { useAppDispatch } from "../../../app/hooks.ts";
 //utils
@@ -7,8 +7,8 @@ import { cn } from "../../../utils/cn.ts";
 import { DateFormatter } from "../../../utils/DateFormatter.ts";
 import { TTrack } from "../../../utils/types/track.ts";
 //components
-import { UploadForm } from "./UploadForm.tsx";
-import { EditForm} from "./EditForm.tsx";
+import { UploadMediaModal } from "./UploadMediaModal.tsx";
+import { EditTrackModal} from "./TrackModals/EditTrackModal.tsx";
 import { Button } from "@mui/material";
 import { DeleteIcon } from "../../../components/icons/DeleteIcon.tsx";
 import { EditIcon } from "../../../components/icons/EditIcon.tsx";
@@ -18,7 +18,9 @@ import defaultImage from "../../../assets/defaultImage.avif";
 //actions
 import { setAudioPlayerUrl } from "../../../slices/audioPlayerSlice.ts";
 
-export const ListItem: React.FC<TTrack> = (props) => {
+type TListItemProps = {track: TTrack}
+
+export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
   const dispatch = useAppDispatch();
   const [ deleteTrack, { isLoading: isDeleteLoading } ] = useDeleteTrackMutation();
   const [ unloadTrack, { isLoading: isUnloadLoading, isError: isUnloadError } ] = useUnloadTrackMutation();
@@ -29,19 +31,19 @@ export const ListItem: React.FC<TTrack> = (props) => {
     className="bg-black-10 border-[1px] border-black-20 px-[24px] py-[14px] rounded-[4px] flex items-center gap-[20px]"
   >
     <div className="relative">
-      <div className={cn(props?.audioFile && 'opacity-70')}>
+      <div className={cn(track?.audioFile && 'opacity-70')}>
         {
-          props.coverImage
-            ? <img className="size-[100px] object-cover" src={props.coverImage} alt={props.title}/>
-            : <img className="size-[100px] object-cover" src={defaultImage} alt={props.title}/>
+          track.coverImage
+            ? <img className="size-[100px] object-cover" src={track.coverImage} alt={track.title}/>
+            : <img className="size-[100px] object-cover" src={defaultImage} alt={track.title}/>
         }
       </div>
       {
-        props?.audioFile &&
+        track?.audioFile &&
         <button
           className="absolute top-1/2 left-1/2 -translate-1/2"
           onClick={() => {
-            dispatch(setAudioPlayerUrl(props.audioFile));
+            dispatch(setAudioPlayerUrl(track.audioFile));
           }}
         >
           <PlayIcon className="size-[40px]"/>
@@ -49,46 +51,46 @@ export const ListItem: React.FC<TTrack> = (props) => {
       }
     </div>
     <div className="flex-2">
-      <p className="text-[18px]">{props.title}</p>
-      <p className="text-grey-60">{props.artist}</p>
+      <p className="text-[18px]">{track.title}</p>
+      <p className="text-grey-60">{track.artist}</p>
     </div>
-    <p className="flex-1">{DateFormatter.getReadableDate(props.createdAt)}</p>
-    <p className="flex-1">{props.genres.toString().replace(/,/g, ', ')}</p>
+    <p className="flex-1">{DateFormatter.getReadableDate(track.createdAt)}</p>
+    <p className="flex-1">{track.genres.toString().replace(/,/g, ', ')}</p>
     <div className="flex gap-[12px] justify-end">
       <button
         className="cursor-pointer"
         onClick={() => { setIsEditModalOpen(true); }}
       ><EditIcon/></button>
-      <EditForm
-        defaultValues={props}
-        id={props.id}
+      <EditTrackModal
+        defaultValues={track}
+        id={track.id}
         isModalOpen={isEditModalOpen}
-        closeModal={() => { setIsEditModalOpen(false) }}
+        onClose={() => { setIsEditModalOpen(false) }}
       />
       <button
         disabled={isDeleteLoading}
         className="cursor-pointer"
         onClick={() => {
-          deleteTrack(props.id);
+          deleteTrack(track.id);
         }}
       ><DeleteIcon/></button>
       {
-        props?.audioFile
+        track?.audioFile
           ? <Button
               disabled={isUnloadError}
               loading={isUnloadLoading}
-              onClick={() => { unloadTrack(props.id) }}
+              onClick={() => { unloadTrack(track.id) }}
             >Unload</Button>
           : <Button
               onClick={() => { setIsUploadModalOpen(true); }}
             >Upload</Button>
       }
-      <UploadForm
-        id={props.id}
+      <UploadMediaModal
+        id={track.id}
         isModalOpen={isUploadModalOpen}
-        closeModal={() => { setIsUploadModalOpen(false) }}
+        onClose={() => { setIsUploadModalOpen(false) }}
       />
     </div>
   </li>)
-}
+});
 

@@ -1,66 +1,81 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 //types
 import { TTracksData } from "../utils/types/track.ts";
-import { TTrackFormValues} from "../utils/types/track.ts";
+import { TTrackFields } from "../utils/types/track.ts";
 
 export const api = createApi({
-  reducerPath: 'api',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:8000/api/' }),
-  tagTypes: [ 'Tracks' ],
+  reducerPath: "api",
+  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:8000/api/" }),
+  tagTypes: ["Tracks"],
   endpoints: (builder) => ({
     getGenres: builder.query<string[], null>({
-      query: () => 'genres',
+      query: () => "genres",
     }),
-    getTracks: builder.query<TTracksData, {
-      sort: string;
-      order: string;
-      page: number;
-      search?: string;
-      genre?: string;
-    }>({
-      query: ({sort, order, page, search, genre}) => `tracks?sort=${sort}&order=${order}&page=${encodeURIComponent(page)}${search ? `&search=${encodeURIComponent(search)}` : '' }${genre ? `&genre=${encodeURIComponent(genre)}` : '' }`,
-      providesTags: ['Tracks']
+    getTracks: builder.query<
+      TTracksData,
+      {
+        sort: string;
+        order: string;
+        page: number;
+        search?: string;
+        genre?: string;
+      }
+    >({
+      query: ({ sort, order, page, search, genre }) => {
+        const encodedSearchParam = search
+          ? `&search=${encodeURIComponent(search)}`
+          : "";
+        const encodedGenreParam = genre
+          ? `&genre=${encodeURIComponent(genre)}`
+          : "";
+        const encodedPageParam = page
+          ? `&page=${encodeURIComponent(page)}`
+          : "";
+
+        return `tracks?sort=${sort}&order=${order}${encodedPageParam}${encodedSearchParam}${encodedGenreParam}`;
+      },
+      providesTags: ["Tracks"],
     }),
     deleteTrack: builder.mutation<null, string>({
       query: (id) => ({
         url: `tracks/${id}`,
-        method: 'DELETE'
+        method: "DELETE",
       }),
-      invalidatesTags: ['Tracks']
+      invalidatesTags: ["Tracks"],
     }),
-    createTrack: builder.mutation<void, Partial<TTrackFormValues>>({
-      query: track => ({
-        url: 'tracks',
-        method: 'POST',
-        body: track
+    createTrack: builder.mutation<void, TTrackFields>({
+      query: (track) => ({
+        url: "tracks",
+        method: "POST",
+        body: track,
       }),
-      invalidatesTags: ['Tracks']
+      invalidatesTags: ["Tracks"],
     }),
-    editTrack: builder.mutation<void, {id: string, track: Partial<TTrackFormValues>}>({
-      query: ({id, track}) => ({
+    editTrack: builder.mutation<void, { id: string; track: TTrackFields }>({
+      query: ({ id, track }) => ({
         url: `tracks/${id}`,
-        method: 'PUT',
-        body: track
+        method: "PUT",
+        body: track,
       }),
-      invalidatesTags: ['Tracks']
+      invalidatesTags: ["Tracks"],
     }),
-    uploadTrack: builder.mutation<null, {id: string, file: FormData}>({
+    uploadTrack: builder.mutation<null, { id: string; file: FormData }>({
       query: ({ id, file }) => ({
         url: `tracks/${id}/upload`,
-        method: 'POST',
+        method: "POST",
         body: file,
       }),
-      invalidatesTags: ['Tracks']
+      invalidatesTags: ["Tracks"],
     }),
     unloadTrack: builder.mutation<null, string>({
       query: (id) => ({
         url: `tracks/${id}/file`,
-        method: 'DELETE',
+        method: "DELETE",
       }),
-      invalidatesTags: ['Tracks']
+      invalidatesTags: ["Tracks"],
     }),
   }),
-})
+});
 
 export const {
   useGetGenresQuery,
@@ -70,4 +85,4 @@ export const {
   useEditTrackMutation,
   useUploadTrackMutation,
   useUnloadTrackMutation,
-} = api
+} = api;

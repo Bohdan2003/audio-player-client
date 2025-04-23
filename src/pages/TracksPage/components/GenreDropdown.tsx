@@ -14,7 +14,7 @@ export const GenreDropdown: React.FC<TGenreDropdownProps> = ({ setGenre }) => {
   const open = Boolean(anchorEl);
 
   if(isLoading) return <p>Loading...</p>;
-  if(!genres || isError) return <p>Loading...</p>;
+  if(!genres || isError) return <p>Error</p>;
 
   return (
     <>
