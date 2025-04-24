@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { FormProvider, useForm } from 'react-hook-form';
 import { yupResolver} from "@hookform/resolvers/yup";
 import * as yup from 'yup';
@@ -28,7 +27,7 @@ type TTrackFormProps = {
   isModalOpen: boolean,
   onClose: () => void,
   isLoading: boolean,
-  error: any,
+  error: object,
   isError: boolean,
   isSuccess: boolean,
   resetMutation: () => void,
@@ -51,15 +50,11 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
 }) => {
   const methods = useForm({
     resolver: yupResolver(schema),
-    defaultValues: { title:'', artist: '', album:'', genres: [], coverImage:'' },
+    defaultValues: defaultValues || { title:'', artist: '', album:'', genres: [], coverImage:'' },
     reValidateMode: 'onBlur',
   });
   const { watch, setValue, reset } = methods;
   const genres = watch("genres") || [];
-
-  useEffect(() => {
-    if(defaultValues) reset(defaultValues);
-  }, [defaultValues, reset]);
 
   const setNewGenre = (newGenre: string) => {
     if (newGenre && !genres.includes(newGenre)) {
@@ -92,17 +87,14 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
             onSubmit={methods.handleSubmit(onSubmit)}
           >
             <FormTextField
-              fullWidth
               name="title"
               label="Track title"
             />
             <FormTextField
-              fullWidth
               name="artist"
               label="Artist name"
             />
             <FormTextField
-              fullWidth
               name="album"
               label="Album name"
             />
@@ -123,12 +115,10 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
             </div>
 
             <FormTextField
-              fullWidth
               name="coverImage"
               label="Cover image"
             />
             <Button
-              fullWidth
               variant="contained"
               type="submit"
               loading={isLoading}
@@ -138,7 +128,7 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
             <Button
               type="button"
               variant="outlined"
-              onClick={() => reset()}
+              onClick={() => reset(defaultValues)}
             >
               Clear
             </Button>
