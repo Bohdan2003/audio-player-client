@@ -42,7 +42,7 @@ export const Filters: React.FC = () => {
   const sort = useAppSelector((state) => state.filter.sort);
   const order = useAppSelector((state) => state.filter.order);
 
-  const [searchValue, setSearchValue] = useState<string>("");
+  const [searchValue, setSearchValue] = useState("");
 
   const debouncedSearch = useMemo(
     () =>

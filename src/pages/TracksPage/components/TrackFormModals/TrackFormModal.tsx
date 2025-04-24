@@ -1,4 +1,4 @@
-import { FormProvider, useForm } from 'react-hook-form';
+import { FormProvider, Resolver, useForm } from 'react-hook-form';
 import { yupResolver} from "@hookform/resolvers/yup";
 import * as yup from 'yup';
 import {
@@ -13,6 +13,8 @@ import { FormGenresSelect} from "./FormGenresSelect.tsx";
 //types
 import { TTrackFields } from "../../../../utils/types/track.ts";
 import React from "react";
+//utils
+import { isAPIErrorType } from "../../../../utils/types/APIErrorType.ts";
 
 const schema = yup.object().shape({
   title: yup.string().required('Track title is required'),
@@ -52,7 +54,7 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
   defaultValues,
 }) => {
   const methods = useForm({
-    resolver: yupResolver(schema),
+    resolver: yupResolver(schema) as Resolver<TTrackFields>,
     defaultValues: defaultValues || { title:'', artist: '', album:'', genres: [], coverImage:'' },
     reValidateMode: 'onBlur',
   });
@@ -114,6 +116,7 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
               Send
             </Button>
             <Button
+              color="secondary"
               type="button"
               variant="outlined"
               onClick={() => onClose()}
@@ -129,8 +132,7 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
             }
             {
               isError &&
-              //@ts-ignore
-              <Alert severity="error">{error?.data?.error || 'Error'}</Alert>
+              <Alert severity="error">{ isAPIErrorType(error) && error?.data?.error || 'Something went wrong!'}</Alert>
             }
           </form>
         </FormProvider>

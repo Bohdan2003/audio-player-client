@@ -17,7 +17,11 @@ const theme = createTheme({
     },
     error: {
       main: '#ff5252',
-    }
+    },
+    secondary: {
+      main: '#c6c6c6',
+      contrastText: '#c6c6c6',
+    },
   },
   typography: {
     fontFamily: `'Inter', 'Roboto', 'sans-serif'`,

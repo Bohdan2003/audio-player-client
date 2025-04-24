@@ -1,4 +1,4 @@
-import { FormControl, Chip, FormHelperText, Typography } from "@mui/material";
+import { Chip, FormHelperText, Typography } from "@mui/material";
 import {Controller, useFormContext} from "react-hook-form";
 import {GenreDropdown} from "./GenreDropdown.tsx";
 import React from "react";
@@ -24,7 +24,7 @@ export const FormGenresSelect: React.FC = () => {
               />
             ))}
           </div>
-          <FormControl>
+          <div>
             <GenreDropdown
               setGenre={(genre: string) => {
                 if (genre && !field.value.includes(genre)) {
@@ -35,9 +35,12 @@ export const FormGenresSelect: React.FC = () => {
             />
 
             {fieldState.error?.message && (
-              <FormHelperText error>{fieldState.error.message}</FormHelperText>
+              <FormHelperText
+                data-testid="error-genre"
+                error
+              >{fieldState.error.message}</FormHelperText>
             )}
-          </FormControl>
+          </div>
         </div>
       )}
     />

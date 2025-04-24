@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { useGetGenresQuery } from "../../../../app/api.ts";
 //components
-import { Alert, Button, Menu, MenuItem } from '@mui/material';
+import {Alert, Button, CircularProgress, Menu, MenuItem} from '@mui/material';
 
 type TGenreDropdownProps = {
   setGenre: (genre: string) => void;
@@ -13,12 +13,13 @@ export const GenreDropdown: React.FC<TGenreDropdownProps> = ({ setGenre }) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
 
-  if(isLoading) return <p>Loading...</p>;
+  if(isLoading) return <CircularProgress/>;
   if(!genres || isError) return <Alert severity="error">Error</Alert>;
 
   return (
     <>
       <Button
+        color="secondary"
         size="small"
         className="max-w-4"
         variant="outlined"

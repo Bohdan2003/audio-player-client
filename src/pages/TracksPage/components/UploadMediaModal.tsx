@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import { useUploadTrackMutation } from '../../../app/api';
 import { useForm, FormProvider, Controller } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -11,6 +10,8 @@ import {
   DialogTitle,
   Dialog
 } from '@mui/material';
+//utils
+import { isAPIErrorType } from "../../../utils/types/APIErrorType.ts";
 
 type TFormValues = {
   audioFile: File;
@@ -38,7 +39,6 @@ const schema = yup.object().shape({
 });
 
 export const UploadMediaModal: React.FC<TUploadTrackFormProps> = ({ id, isModalOpen, onClose }) => {
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [uploadTrack, {
     isLoading,
     isSuccess,
@@ -82,7 +82,6 @@ export const UploadMediaModal: React.FC<TUploadTrackFormProps> = ({ id, isModalO
               render={({ field, fieldState }) => (
                 <div>
                   <input
-                    ref={fileInputRef}
                     type="file"
                     accept=".mp3, .wav"
                     onChange={(e) => field.onChange(e.target.files?.[0])}
@@ -105,23 +104,23 @@ export const UploadMediaModal: React.FC<TUploadTrackFormProps> = ({ id, isModalO
               Upload
             </Button>
 
-            <Button variant="outlined" onClick={() => {
-              methods.reset();
-              if (fileInputRef.current) {
-                fileInputRef.current.value = '';
-              }
-            }}>
-              Clear
+            <Button
+              color="secondary"
+              variant="outlined"
+              onClick={() => {
+                onClose();
+              }}
+            >
+              Close
             </Button>
 
             {
               isSuccess &&
-              <Alert severity="success">Файл успешно загружен!</Alert>
+              <Alert severity="success">File uploaded successfully!</Alert>
             }
             {
               isError &&
-              //@ts-ignore
-              <Alert severity="error">{error?.data?.error || 'Upload failed'}</Alert>
+              <Alert severity="error">{ isAPIErrorType(error) && error?.data?.error || 'Upload failed!'}</Alert>
             }
           </form>
         </FormProvider>

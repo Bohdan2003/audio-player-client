@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAppSelector } from "../../../app/hooks.ts";
 import { useGetTracksQuery } from "../../../app/api.ts";
 //components
-import { ListItem } from "./ListItem.tsx";
-import { Pagination, PaginationItem } from '@mui/material';
+import { ListItem } from "./ListItem/ListItem.tsx";
+import { Pagination, PaginationItem, CircularProgress, Alert } from '@mui/material';
 
 export const List: React.FC = () => {
   const navigate = useNavigate();
@@ -16,9 +16,12 @@ export const List: React.FC = () => {
 
   const { data, isLoading, isError } = useGetTracksQuery({sort, order, page: +page, search, genre});
 
-  if(isLoading) return <p className="text-center">Loading...</p>;
-  if(isError || !data) return <p className="text-center">Error</p>;
-  if(data.data.length === 0) return <p className="text-center">The track list is empty</p>;
+  if(isLoading)
+    return <div className="text-center"><CircularProgress data-testid="loading-tracks"/></div>;
+  if(isError || !data)
+    return <div className="flex justify-center"><Alert severity="error">Something went wrong!</Alert></div>;
+  if(data.data.length === 0)
+    return <p className="text-center">The track list is empty</p>;
 
   return (<section>
       <div className="container">
