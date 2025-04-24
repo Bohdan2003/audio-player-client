@@ -5,4 +5,4 @@ const isFetchBaseQueryErrorType = (error?: string | object): error is FetchBaseQ
 
 
 type FetchApiQueryError = FetchBaseQueryError & { data: { error: string }}
-export const isAPIErrorType = (error?: string | object): error is FetchApiQueryError => isFetchBaseQueryErrorType(error) && 'error' in error;
+export const isAPIErrorType = (error?: string | object): error is FetchApiQueryError => isFetchBaseQueryErrorType(error) && 'data' in error;

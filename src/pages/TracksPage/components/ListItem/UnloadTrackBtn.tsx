@@ -10,7 +10,10 @@ export const UnloadTrackBtn: React.FC<{id: string}> = ({id}) => {
 
   return (<>
     <Button
+      loading={isLoading}
+      data-loading={isLoading}
       disabled={isLoading}
+      aria-disabled={isLoading}
       onClick={() => {
         setIsDialogOpen(true)
       }}

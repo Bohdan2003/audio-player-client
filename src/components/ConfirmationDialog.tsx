@@ -28,12 +28,17 @@ export const ConfirmationDialog: React.FC<TConfirmationDialogProps> = ({
     <DialogContent>
       <div className="flex gap-2">
         <Button
+          data-testid="confirm-delete"
           fullWidth
           variant="outlined"
           onClick={onConfirm}
+          loading={isLoading}
+          data-loading={isLoading}
           disabled={isLoading}
-        >Unload</Button>
+          aria-disabled={isLoading}
+        >Confirm</Button>
         <Button
+          data-testid="confirm-delete"
           fullWidth
           variant="contained"
           onClick={onClose}
@@ -41,7 +46,9 @@ export const ConfirmationDialog: React.FC<TConfirmationDialogProps> = ({
       </div>
       {
         isError &&
-        <Alert className="mt-2" severity="error">Unload failed</Alert>
+        <div data-testid="toast-container">
+          <Alert data-testid="toast-error" className="mt-2" severity="error">Something went wrong!</Alert>
+        </div>
       }
     </DialogContent>
   </Dialog>)

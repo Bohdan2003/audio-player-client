@@ -3,6 +3,7 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 export type TFilterState = {
   audioFile?: string | null;
+  id?: string | null;
 }
 
 const initialState: TFilterState = {
@@ -13,14 +14,18 @@ export const audioPlayerSlice = createSlice({
   name: 'audioPlayer',
   initialState,
   reducers: {
-    setAudioPlayerUrl: (state, action: PayloadAction<TFilterState['audioFile']>) => {
-      state.audioFile = action.payload;
+    setActiveAudio: (state, action: PayloadAction<{
+      id: string;
+      audioFile: string;
+    }>) => {
+      state.audioFile = action.payload.audioFile;
+      state.id = action.payload.id;
     },
   },
 })
 
 export const {
-  setAudioPlayerUrl
+  setActiveAudio
 } = audioPlayerSlice.actions
 
 

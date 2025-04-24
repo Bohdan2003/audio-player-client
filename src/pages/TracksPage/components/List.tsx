@@ -17,11 +17,11 @@ export const List: React.FC = () => {
   const { data, isLoading, isError } = useGetTracksQuery({sort, order, page: +page, search, genre});
 
   if(isLoading)
-    return <div className="text-center"><CircularProgress data-testid="loading-tracks"/></div>;
+    return <div className="text-center py-10"><CircularProgress data-testid="loading-tracks"/></div>;
   if(isError || !data)
-    return <div className="flex justify-center"><Alert severity="error">Something went wrong!</Alert></div>;
+    return <div className="flex justify-center py-10"><Alert severity="error">Something went wrong!</Alert></div>;
   if(data.data.length === 0)
-    return <p className="text-center">The track list is empty</p>;
+    return <p className="text-center py-10">The track list is empty</p>;
 
   return (<section>
       <div className="container">

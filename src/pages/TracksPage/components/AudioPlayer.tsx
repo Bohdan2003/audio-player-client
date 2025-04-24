@@ -16,6 +16,7 @@ const formatTime = (time: number) => {
 
 export const AudioPlayer = () => {
   const audioFile = useAppSelector((state) => state.audioPlayer.audioFile);
+  const id = useAppSelector((state) => state.audioPlayer.id);
   const [wavesurfer, setWavesurfer] = useState<WaveSurfer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -46,29 +47,32 @@ export const AudioPlayer = () => {
 
   return (
     <div className="fixed bottom-0 left-0 w-full bg-black-15 px-4 py-1 shadow-lg z-50">
-      <div className="container">
+      <div className="container" data-testid={`audio-player-${id}`}>
         {
           isError &&
           <Alert severity="error" className="mb-2">
             Playback error
           </Alert>
         }
-        <WavesurferPlayer
-          url={`http://localhost:8000/api/files/${audioFile}`}
-          height={isError ? 1 : 75}
-          waveColor="violet"
-          progressColor="purple"
-          onReady={onReady}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-          onError={() => setIsError(true)}
-        />
+        <div data-testid={`audio-progress-${id}`}>
+          <WavesurferPlayer
+            url={`http://localhost:8000/api/files/${audioFile}`}
+            height={isError ? 1 : 75}
+            waveColor="violet"
+            progressColor="purple"
+            onReady={onReady}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onError={() => setIsError(true)}
+          />
+        </div>
 
         <div className="flex justify-between items-center mt-1">
           <IconButton
             disabled={isError}
             onClick={onPlayPause}
             color="primary"
+            data-testid={isPlaying ? `pause-button-${id}` :`play-button-${id}`}
           >
             {isPlaying ? <Pause /> : <PlayArrow />}
           </IconButton>

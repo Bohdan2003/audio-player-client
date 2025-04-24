@@ -13,6 +13,7 @@ export const DeleteTrackBtn: React.FC<{id: string}> = ({id}) => {
       className="cursor-pointer"
       data-testid={`delete-track-${id}`}
       disabled={isLoading}
+      aria-disabled={isLoading}
       onClick={() => {
         setIsDialogOpen(true)
       }}

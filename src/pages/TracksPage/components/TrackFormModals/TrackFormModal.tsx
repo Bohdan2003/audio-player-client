@@ -58,6 +58,7 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
     defaultValues: defaultValues || { title:'', artist: '', album:'', genres: [], coverImage:'' },
     reValidateMode: 'onBlur',
   });
+  console.log(error)
 
   return (
     <Dialog
@@ -108,10 +109,10 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
               variant="contained"
               type="submit"
               loading={isLoading}
-              disabled={isLoading}
-              data-testid="submit-button"
               data-loading={isLoading}
+              disabled={isLoading}
               aria-disabled={isLoading}
+              data-testid="submit-button"
             >
               Send
             </Button>

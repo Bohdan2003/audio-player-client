@@ -16,7 +16,7 @@ import { UnloadTrackBtn } from "./UnloadTrackBtn.tsx";
 //img
 import defaultImage from "../../../../assets/defaultImage.avif";
 //actions
-import { setAudioPlayerUrl } from "../../../../slices/audioPlayerSlice.ts";
+import { setActiveAudio } from "../../../../slices/audioPlayerSlice.ts";
 
 type TListItemProps = {track: TTrack}
 const imgCls = 'size-[200px] lg:size-[100px] object-cover';
@@ -43,7 +43,8 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
         <button
           className="absolute top-1/2 left-1/2 -translate-1/2"
           onClick={() => {
-            dispatch(setAudioPlayerUrl(track.audioFile));
+            if(track.audioFile)
+              dispatch(setActiveAudio({id: track.id, audioFile: track.audioFile}));
           }}
         >
           <PlayIcon className="size-[40px]"/>

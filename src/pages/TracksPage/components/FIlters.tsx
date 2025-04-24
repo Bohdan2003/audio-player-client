@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../../app/hooks.ts";
 //components
 import { BaseTextField } from "../../../components/BaseTextField.tsx";
 import { BaseSelect } from "../../../components/BaseSelect.tsx";
+import {Alert, CircularProgress} from "@mui/material";
 //actions
 import { 
   setSearch, 
@@ -17,7 +18,6 @@ import {
 import { debounce } from "../../../utils/debounce.ts";
 //types
 import { TTrack } from "../../../utils/types/track.ts";
-import {Alert} from "@mui/material";
 
 type TOption = { label: string, value: keyof TTrack }
 
@@ -97,7 +97,7 @@ export const Filters: React.FC = () => {
             }}
           />
         </div>
-        { isLoading && <p>Loading...</p> }
+        { isLoading && <CircularProgress/> }
         {
           !isLoading && !isError &&
           <BaseSelect
@@ -113,7 +113,7 @@ export const Filters: React.FC = () => {
             }}
           />
         }
-        { isError && <Alert severity="error">Error</Alert> }
+        { isError && <Alert severity="error">Something went wrong!</Alert> }
       </div>
     </div>
   );

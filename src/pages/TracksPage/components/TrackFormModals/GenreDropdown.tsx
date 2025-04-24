@@ -14,7 +14,7 @@ export const GenreDropdown: React.FC<TGenreDropdownProps> = ({ setGenre }) => {
   const open = Boolean(anchorEl);
 
   if(isLoading) return <CircularProgress/>;
-  if(!genres || isError) return <Alert severity="error">Error</Alert>;
+  if(!genres || isError) return <Alert severity="error">Something went wrong!</Alert>;
 
   return (
     <>
@@ -23,6 +23,10 @@ export const GenreDropdown: React.FC<TGenreDropdownProps> = ({ setGenre }) => {
         size="small"
         className="max-w-4"
         variant="outlined"
+        loading={isLoading}
+        data-loading={isLoading}
+        disabled={isLoading}
+        aria-disabled={isLoading}
         onClick={event => {
           setAnchorEl(event.currentTarget);
         }}
