@@ -4,22 +4,25 @@ import * as yup from 'yup';
 import {
   Alert,
   Button,
-  Chip,
   Dialog,
   DialogContent,
   DialogTitle,
-  Typography
 } from "@mui/material";
 import { FormTextField } from "../../../../components/FormTextField.tsx";
-import { GenreDropdown } from "../GenreDropdown.tsx";
+import { FormGenresSelect} from "./FormGenresSelect.tsx";
 //types
 import { TTrackFields } from "../../../../utils/types/track.ts";
+import React from "react";
 
 const schema = yup.object().shape({
   title: yup.string().required('Track title is required'),
   artist: yup.string().required('Artist name is required'),
   album: yup.string(),
-  genres: yup.array().of(yup.string().required()),
+  genres: yup
+    .array()
+    .of(yup.string().required("Genre can't be empty"))
+    .min(1, 'At least one genre is required')
+    .required('Genres are required'),
   coverImage: yup.string().url('Must be a valid URL'),
 });
 
@@ -27,7 +30,7 @@ type TTrackFormProps = {
   isModalOpen: boolean,
   onClose: () => void,
   isLoading: boolean,
-  error: object,
+  error?: object,
   isError: boolean,
   isSuccess: boolean,
   resetMutation: () => void,
@@ -53,21 +56,6 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
     defaultValues: defaultValues || { title:'', artist: '', album:'', genres: [], coverImage:'' },
     reValidateMode: 'onBlur',
   });
-  const { watch, setValue, reset } = methods;
-  const genres = watch("genres") || [];
-
-  const setNewGenre = (newGenre: string) => {
-    if (newGenre && !genres.includes(newGenre)) {
-      setValue('genres', [...genres, newGenre]);
-    }
-  };
-
-  const handleRemoveGenre = (genreToRemove?: string) => {
-    setValue(
-      'genres',
-      genres.filter((genre) => genre !== genreToRemove)
-    );
-  };
 
   return (
     <Dialog
@@ -84,57 +72,60 @@ export const TrackFormModal: React.FC<TTrackFormProps> = ({
         <FormProvider {...methods}>
           <form
             className="grid gap-[20px] py-2"
+            data-testid="track-form"
             onSubmit={methods.handleSubmit(onSubmit)}
           >
             <FormTextField
               name="title"
               label="Track title"
+              inputTestId="input-title"
+              helperTextTestId="error-title"
             />
             <FormTextField
               name="artist"
               label="Artist name"
+              inputTestId="input-artist"
+              helperTextTestId="error-artist"
             />
             <FormTextField
               name="album"
               label="Album name"
+              inputTestId="input-album"
+              helperTextTestId="error-album"
             />
 
-            {/* Genre input */}
-            <div>
-              <Typography variant="subtitle1">Genres</Typography>
-              <div className="flex gap-[8px] flex-wrap mb-[12px]">
-                {genres.map((genre, index) => (
-                  <Chip
-                    key={index}
-                    label={genre}
-                    onDelete={() => handleRemoveGenre(genre)}
-                  />
-                ))}
-              </div>
-              <GenreDropdown setGenre={setNewGenre}/>
-            </div>
+            <FormGenresSelect/>
 
             <FormTextField
               name="coverImage"
               label="Cover image"
+              inputTestId="input-cover-image"
+              helperTextTestId="error-cover-image"
             />
             <Button
               variant="contained"
               type="submit"
               loading={isLoading}
+              disabled={isLoading}
+              data-testid="submit-button"
+              data-loading={isLoading}
+              aria-disabled={isLoading}
             >
               Send
             </Button>
             <Button
               type="button"
               variant="outlined"
-              onClick={() => reset(defaultValues)}
+              onClick={() => onClose()}
             >
-              Clear
+              Close
             </Button>
             {
               isSuccess &&
-              <Alert severity="success">Success</Alert>
+              <Alert
+                severity="success"
+                data-testid="confirm-dialog"
+              >Success</Alert>
             }
             {
               isError &&

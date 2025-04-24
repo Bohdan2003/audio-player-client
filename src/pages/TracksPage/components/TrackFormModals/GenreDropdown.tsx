@@ -1,8 +1,8 @@
 //hooks
 import { useState } from 'react';
-import { useGetGenresQuery } from "../../../app/api.ts";
+import { useGetGenresQuery } from "../../../../app/api.ts";
 //components
-import { Button, Menu, MenuItem } from '@mui/material';
+import { Alert, Button, Menu, MenuItem } from '@mui/material';
 
 type TGenreDropdownProps = {
   setGenre: (genre: string) => void;
@@ -14,16 +14,24 @@ export const GenreDropdown: React.FC<TGenreDropdownProps> = ({ setGenre }) => {
   const open = Boolean(anchorEl);
 
   if(isLoading) return <p>Loading...</p>;
-  if(!genres || isError) return <p>Error</p>;
+  if(!genres || isError) return <Alert severity="error">Error</Alert>;
 
   return (
     <>
-      <Button variant="outlined" onClick={event => {
-        setAnchorEl(event.currentTarget);
-      }}>
+      <Button
+        size="small"
+        className="max-w-4"
+        variant="outlined"
+        onClick={event => {
+          setAnchorEl(event.currentTarget);
+        }}
+        data-testid="genre-selector"
+      >
         +
       </Button>
       <Menu
+        className="test"
+        data-testid="genre-selector"
         anchorEl={anchorEl}
         open={open}
         onClose={() => {setAnchorEl(null);}}

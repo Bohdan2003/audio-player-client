@@ -17,6 +17,7 @@ import {
 import { debounce } from "../../../utils/debounce.ts";
 //types
 import { TTrack } from "../../../utils/types/track.ts";
+import {Alert} from "@mui/material";
 
 type TOption = { label: string, value: keyof TTrack }
 
@@ -33,7 +34,7 @@ const orderOptions = [
 ];
 
 export const Filters: React.FC = () => {
-  const { data: genres, isLoading } = useGetGenresQuery(null);
+  const { data: genres, isLoading, isError } = useGetGenresQuery(null);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -75,7 +76,7 @@ export const Filters: React.FC = () => {
           />
           <BaseSelect
             className="w-[200px]"
-            id="sort-field"
+            data-testid="sort-select"
             label="Sort Field"
             value={sort}
             options={sortOptions}
@@ -96,20 +97,23 @@ export const Filters: React.FC = () => {
             }}
           />
         </div>
-        {isLoading
-          ? <p>Loading...</p>
-          : <BaseSelect
-              className="w-[200px]"
-              id="filter-genre"
-              label="Filter by genre"
-              value={genre}
-              options={genreOptions}
-              onChange={value => {
-                dispatch(setGenre(value));
-                navigate(`/tracks`);
-              }}
-            />
+        { isLoading && <p>Loading...</p> }
+        {
+          !isLoading && !isError &&
+          <BaseSelect
+            className="w-[200px]"
+            id="filter-genre"
+            data-testid="filter-genre"
+            label="Filter by genre"
+            value={genre}
+            options={genreOptions}
+            onChange={value => {
+              dispatch(setGenre(value));
+              navigate(`/tracks`);
+            }}
+          />
         }
+        { isError && <Alert severity="error">Error</Alert> }
       </div>
     </div>
   );

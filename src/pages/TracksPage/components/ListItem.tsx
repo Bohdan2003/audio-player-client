@@ -30,6 +30,7 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
 
   return (<li
     className="bg-black-10 border-[1px] border-black-20 px-[24px] py-[14px] rounded-[4px] flex flex-col lg:flex-row items-center gap-[20px]"
+    data-testid={`track-item-${track.id}`}
   >
     <div className="relative">
       <div className={cn(track?.audioFile && 'opacity-70')}>
@@ -52,8 +53,14 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
       }
     </div>
     <div className="flex-2">
-      <p className="text-[18px]">{track.title}</p>
-      <p className="text-grey-60">{track.artist}</p>
+      <p
+        className="text-[18px]"
+        data-testid={`track-item-${track.id}-title`}
+      >{track.title}</p>
+      <p
+        className="text-grey-60"
+        data-testid={`track-item-${track.id}-artist`}
+      >{track.artist}</p>
     </div>
     <p className="flex-1">{DateFormatter.getReadableDate(track.createdAt)}</p>
     <p className="flex-1">{track.genres.toString().replace(/,/g, ', ')}</p>
@@ -61,6 +68,7 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
       <div className="flex gap-[12px] justify-end">
         <button
           className="cursor-pointer"
+          data-testid={`edit-track-${track.id}`}
           onClick={() => { setIsEditModalOpen(true); }}
         ><EditIcon/></button>
         <EditTrackModal
@@ -70,12 +78,14 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
           onClose={() => { setIsEditModalOpen(false) }}
         />
         <button
-          disabled={isDeleteLoading}
           className="cursor-pointer"
+          data-testid={`delete-track-${track.id}`}
+          disabled={isDeleteLoading}
           onClick={() => {
             deleteTrack(track.id);
           }}
         ><DeleteIcon/></button>
+
         {
           track?.audioFile
             ? <Button
@@ -84,6 +94,7 @@ export const ListItem: React.FC<TListItemProps> = memo(({track}) => {
                 onClick={() => { unloadTrack(track.id) }}
               >Unload</Button>
             : <Button
+                data-testid={`upload-track-${track.id}`}
                 onClick={() => { setIsUploadModalOpen(true); }}
               >Upload</Button>
         }

@@ -22,6 +22,6 @@ export type TTrackFields = {
   title: string;
   artist: string;
   album?: string;
-  genres?: string[];
+  genres: string[];
   coverImage?: string;
 };

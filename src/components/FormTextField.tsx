@@ -9,7 +9,6 @@ type TFormTextField = {
 
 export const FormTextField: React.FC<TFormTextField> = ({
   name,
-  helperText,
   defaultValue = "",
   ...otherProps
 }) => {
@@ -26,7 +25,6 @@ export const FormTextField: React.FC<TFormTextField> = ({
           {...field}
           {...otherProps}
           error={fieldState.error?.message?.toString()}
-          helperText={helperText}
         />
       )}
     />

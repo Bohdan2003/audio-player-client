@@ -59,13 +59,12 @@ export const api = createApi({
       }),
       async onQueryStarted({ id, track }, { dispatch, queryFulfilled, getState }) {
         const state = getState();
-        const patchResults = [];
         const allTracksQueries = api.util.selectInvalidatedBy(state, [{ type: "Tracks" }]);
 
         for (const key in allTracksQueries) {
           const args = allTracksQueries[key].originalArgs;
 
-          const patchResult = dispatch(
+          dispatch(
             api.util.updateQueryData("getTracks", args, (draft) => {
               const index = draft.data.findIndex((t) => t.id === id);
               if (index !== -1) {
@@ -73,14 +72,12 @@ export const api = createApi({
               }
             })
           );
-
-          patchResults.push(patchResult);
         }
 
         try {
           await queryFulfilled
         } catch {
-          patchResults.forEach(p => p.undo());
+          dispatch(api.util.invalidateTags(['Tracks']))
         }
       },
     }),

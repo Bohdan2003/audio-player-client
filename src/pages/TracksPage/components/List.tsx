@@ -4,7 +4,7 @@ import { useAppSelector } from "../../../app/hooks.ts";
 import { useGetTracksQuery } from "../../../app/api.ts";
 //components
 import { ListItem } from "./ListItem.tsx";
-import { Pagination } from '@mui/material';
+import { Pagination, PaginationItem } from '@mui/material';
 
 export const List: React.FC = () => {
   const navigate = useNavigate();
@@ -16,8 +16,9 @@ export const List: React.FC = () => {
 
   const { data, isLoading, isError } = useGetTracksQuery({sort, order, page: +page, search, genre});
 
-  if(isLoading) return <p>Loading...</p>;
-  if(isError || !data) return <p>Error</p>;
+  if(isLoading) return <p className="text-center">Loading...</p>;
+  if(isError || !data) return <p className="text-center">Error</p>;
+  if(data.data.length === 0) return <p className="text-center">The track list is empty</p>;
 
   return (<section>
       <div className="container">
@@ -25,15 +26,31 @@ export const List: React.FC = () => {
           { data.data.map(track => <ListItem track={track} key={track.id}/>) }
         </ul>
         <div className="grid place-items-center">
-          <Pagination
-            className="mt-[40px]"
-            page={+page}
-            count={data.meta.totalPages}
-            onChange={(_, page) => {
-              navigate(`/tracks/${page}`);
-            }}
-            shape="rounded"
-          />
+          {
+            data.meta.totalPages > 1 &&
+            <Pagination
+              data-testid="pagination"
+              className="mt-[40px]"
+              page={+page}
+              count={data.meta.totalPages}
+              onChange={(_, page) => {
+                navigate(`/tracks/${page}`);
+              }}
+              shape="rounded"
+              renderItem={(item) => (
+                <PaginationItem
+                  {...item}
+                  data-testid={
+                    item.type === 'next'
+                      ? 'pagination-next'
+                      : item.type === 'previous'
+                        ? 'pagination-prev'
+                        : undefined
+                  }
+                />
+              )}
+            />
+          }
         </div>
       </div>
   </section>);
